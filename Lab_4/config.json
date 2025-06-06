@@ -1,3 +1,3 @@
 {
-  "output_strategy": "kafka"
+  "output_strategy": "console"
 }

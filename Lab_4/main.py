@@ -1,3 +1,4 @@
+import csv
 import json
 from console_output import ConsoleOutput
 from kafka_output import KafkaOutput
@@ -16,6 +17,21 @@ def get_strategy(strategy_name: str):
         raise ValueError(f"Unknown strategy: {strategy_name}")
 
 
+def write_to_csv(data_iterable, file_path: str):
+    data_list = list(data_iterable)
+
+    fieldnames = set()
+    for item in data_list:
+        fieldnames.update(item.keys())
+    fieldnames = list(fieldnames)
+
+    with open(file_path, mode='w', newline='', encoding='utf-8') as f:
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in data_list:
+            writer.writerow(row)
+
+
 if __name__ == "__main__":
     with open('config.json') as f:
         config = json.load(f)
@@ -25,3 +41,6 @@ if __name__ == "__main__":
 
     for row in read_web_data(url):
         strategy.output(row)
+
+    data = read_web_data(url)
+    write_to_csv(data, "Dallas_Animal_Shelter_Data.csv")
