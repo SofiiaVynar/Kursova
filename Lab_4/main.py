@@ -39,8 +39,9 @@ if __name__ == "__main__":
     strategy = get_strategy(config["output_strategy"])
     url = "https://www.dallasopendata.com/resource/7h2m-3um5.json"
 
-    for row in read_web_data(url):
+    data = list(read_web_data(url))
+
+    for row in data:
         strategy.output(row)
 
-    data = read_web_data(url)
     write_to_csv(data, "Dallas_Animal_Shelter_Data.csv")
