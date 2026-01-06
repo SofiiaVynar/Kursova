@@ -58,7 +58,6 @@ class FleetService:
         db.session.add(trip)
         db.session.commit()
 
-        # додаємо витрату на пальне
         ExpenseRepository().add(
             vehicle_id=trip.vehicle_id,
             expense_type="Пальне",
