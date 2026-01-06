@@ -23,30 +23,23 @@ service = FleetService()
 def run_notifications():
     if not current_user.is_authenticated:
         return
-
-    # Відключаємо для логіну та реєстрації
     if request.endpoint in ['auth.login', 'auth.register', 'auth.logout']:
         return
-
-    # Або для всіх ендпоінтів auth
     if request.endpoint and request.endpoint.startswith('auth.'):
         return
-
     notifications = NotificationService.get_all_notifications()
     for note in notifications:
         flash(note, 'warning')
 
 
-# ----------------- HOME -----------------
 @web_bp.route('/')
 def home():
     return render_template('home.html')
 
 
-# ----------------- VEHICLES -----------------
 @web_bp.route('/vehicles', methods=['GET', 'POST'])
 def vehicles_page():
-    vehicles = VehicleRepository().get_all()  # перегляд доступний усім
+    vehicles = VehicleRepository().get_all()
     if request.method == 'POST':
         if not current_user.is_authenticated or current_user.role != 'admin':
             flash("Доступ заборонено!", "danger")
@@ -59,19 +52,13 @@ def vehicles_page():
 @web_bp.route('/drivers', methods=['GET', 'POST'])
 def drivers_page():
     drivers = DriverRepository().get_all()
-
-    # Обробка додавання нового водія
     if request.method == 'POST':
         if not current_user.is_authenticated or current_user.role != 'admin':
             flash("Доступ заборонено!", "danger")
             return redirect(url_for('web.drivers_page'))
-
-        # Використовуємо сервіс для додавання водія
         service.add_driver(request.form)
         flash("Водія додано успішно!", "success")
         return redirect(url_for('web.drivers_page'))
-
-    # GET запит — просто показуємо сторінку
     return render_template('drivers.html', drivers=drivers)
 
 
@@ -80,12 +67,10 @@ def trips_page():
     trips = TripRepository().get_all()
     drivers = DriverRepository().get_all()
     vehicles = VehicleRepository().get_all()
-
     if request.method == 'POST':
         if not current_user.is_authenticated or current_user.role != 'admin':
             flash("Доступ заборонено!", "danger")
             return redirect(url_for('web.trips_page'))
-
         trip_data = request.form
         trip = Trip(
             vehicle_id=int(trip_data['vehicle_id']),
@@ -96,10 +81,8 @@ def trips_page():
             fuel_cost=float(trip_data['fuel_cost'])
         )
         TripRepository.add(trip)
-
         flash("Поїздка додана разом із витратою на пальне", "success")
         return redirect(url_for('web.trips_page'))
-
     return render_template('trips.html', trips=trips, drivers=drivers, vehicles=vehicles)
 
 
@@ -107,17 +90,13 @@ def trips_page():
 def maintenance_page():
     maintenances = MaintenanceRepository().get_all()
     vehicles = VehicleRepository().get_all()
-
     if request.method == 'POST':
-        if not current_user.is_authenticated:  # тепер всі увійшлі користувачі
+        if not current_user.is_authenticated:
             flash("Доступ заборонено!", "danger")
             return redirect(url_for('web.maintenance_page'))
-
         service.add_maintenance(request.form)
         flash("ТО додано успішно!", "success")
         return redirect(url_for('web.maintenance_page'))
-
-    # Передаємо змінну admin у шаблон
     admin = current_user.is_authenticated
     return render_template('maintenance.html', maintenances=maintenances, vehicles=vehicles, admin=admin)
 
@@ -133,43 +112,19 @@ def expenses_page():
 def reports_page():
     all_trips = TripRepository.get_all()
     all_expenses = ExpenseRepository().get_all()
-
-    # Пальне
-    fuel_cost = sum(
-        (Decimal(str(t.distance_km)) * Decimal(str(t.fuel_cost)))
-        for t in all_trips if t.fuel_cost
-    )
-
-    # ТО
-    maintenance_cost = sum(
-        Decimal(str(e.amount)) for e in all_expenses if 'ТО' in e.expense_type
-    )
-
-    # Інші витрати (крім ТО та пального)
+    fuel_cost = sum((Decimal(str(t.distance_km)) * Decimal(str(t.fuel_cost))) for t in all_trips if t.fuel_cost)
+    maintenance_cost = sum(Decimal(str(e.amount)) for e in all_expenses if 'ТО' in e.expense_type)
     other_expenses = {}
     for e in all_expenses:
         if 'ТО' not in e.expense_type and 'Пальне' not in e.expense_type:
             other_expenses[e.expense_type] = other_expenses.get(e.expense_type, Decimal('0')) + Decimal(str(e.amount))
-
-    # Формуємо звіт
-    cost_report = {
-        'Пальне': fuel_cost,
-        'ТО': maintenance_cost
-    }
+    cost_report = {'Пальне': fuel_cost, 'ТО': maintenance_cost}
     cost_report.update(other_expenses)
-
-    # Загальна сума
     total_cost = sum(cost_report.values())
     cost_report['Загалом'] = total_cost
-
     total_trips = len(all_trips)
-
-    return render_template(
-        'reports.html',
-        cost_report={k: float(v) for k, v in cost_report.items()},
-        total_trips=total_trips,
-        period_report=None
-    )
+    return render_template('reports.html', cost_report={k: float(v) for k, v in cost_report.items()},
+                           total_trips=total_trips, period_report=None)
 
 
 @web_bp.route('/reports/period')
@@ -177,69 +132,36 @@ def reports_page():
 def reports_period():
     start = request.args.get('start')
     end = request.args.get('end')
-
     trips = TripRepository.get_trips_by_period(start, end)
-
     fuel_total = sum(t.distance_km * t.fuel_cost for t in trips if t.fuel_cost)
-
-    period_report = {
-        'trips': len(trips),
-        'costs': round(fuel_total, 2)
-    }
-
+    period_report = {'trips': len(trips), 'costs': round(fuel_total, 2)}
     all_trips = TripRepository.get_all()
     total_trips = len(all_trips)
     all_expenses = ExpenseRepository().get_all()
-
-    fuel_cost = round(
-        sum(float(t.distance_km) * float(t.fuel_cost) for t in all_trips if t.fuel_cost),
-        2
-    )
-
-    maintenance_cost = round(
-        sum(float(e.amount) for e in all_expenses if 'ТО' in e.expense_type),
-        2
-    )
-
+    fuel_cost = round(sum(float(t.distance_km) * float(t.fuel_cost) for t in all_trips if t.fuel_cost), 2)
+    maintenance_cost = round(sum(float(e.amount) for e in all_expenses if 'ТО' in e.expense_type), 2)
     total_cost = round(fuel_cost + maintenance_cost, 2)
-
-    cost_report = {
-        'Пальне': fuel_cost,
-        'ТО': maintenance_cost,
-        'Загалом': total_cost
-    }
-
-    return render_template(
-        'reports.html',
-        cost_report=cost_report,
-        total_trips=total_trips,
-        period_report=period_report
-    )
+    cost_report = {'Пальне': fuel_cost, 'ТО': maintenance_cost, 'Загалом': total_cost}
+    return render_template('reports.html', cost_report=cost_report, total_trips=total_trips,
+                           period_report=period_report)
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
         return redirect(url_for('web.home'))
-
     if request.method == 'POST':
         gmail = request.form.get('gmail')
         password = request.form.get('password')
-
-        # Перевірка, чи вже існує користувач
         if User.query.filter_by(username=gmail).first():
             flash('Користувач з таким Gmail вже існує!', 'danger')
             return redirect(url_for('auth.register'))
-
-        # Встановлюємо роль "admin" для всіх
         user = User(username=gmail, role='admin')
         user.set_password(password)
         db.session.add(user)
         db.session.commit()
-
-        login_user(user)  # автоматичний вхід після реєстрації
+        login_user(user)
         return redirect(url_for('web.home'))
-
     return render_template('register.html')
 
 
@@ -247,26 +169,20 @@ def register():
 def login():
     if current_user.is_authenticated:
         return redirect(url_for('web.home'))
-
     if request.method == 'POST':
         gmail = request.form.get('gmail')
         password = request.form.get('password')
-
         user = User.query.filter_by(username=gmail).first()
         if user and user.check_password(password):
             user.role = 'admin'
             db.session.commit()
             login_user(user)
-
             return redirect(url_for('web.home'))
-
         flash('Невірний Gmail або пароль', 'danger')
         return redirect(url_for('auth.login'))
-
     return render_template('login.html')
 
 
-# ----------------- ВИХІД -----------------
 @auth_bp.route('/logout')
 def logout():
     if current_user.is_authenticated:
@@ -280,7 +196,6 @@ def logout():
 def edit(maintenance_id):
     maintenance = MaintenanceRepository.get_by_id(maintenance_id)
     vehicles = VehicleRepository().get_all()
-
     if request.method == 'POST':
         MaintenanceRepository.update(
             maintenance_id,
@@ -291,12 +206,7 @@ def edit(maintenance_id):
         )
         flash('ТО оновлено')
         return redirect(url_for('web.maintenance_page'))
-
-    return render_template(
-        'edit_maintenance.html',
-        maintenance=maintenance,
-        vehicles=vehicles
-    )
+    return render_template('edit_maintenance.html', maintenance=maintenance, vehicles=vehicles)
 
 
 @maintenance_bp.route('/maintenance/delete/<int:maintenance_id>', methods=['POST'])
@@ -313,7 +223,6 @@ def edit_vehicle(vehicle_id):
     if current_user.role != 'admin':
         flash("Доступ заборонено!", "danger")
         return redirect(url_for('web.vehicles_page'))
-
     vehicle = VehicleRepository.get_by_id(vehicle_id)
     if request.method == 'POST':
         VehicleRepository.update(
@@ -327,7 +236,6 @@ def edit_vehicle(vehicle_id):
         )
         flash("Автомобіль оновлено", "success")
         return redirect(url_for('web.vehicles_page'))
-
     return render_template('edit_vehicle.html', vehicle=vehicle)
 
 
@@ -337,7 +245,6 @@ def edit_driver(driver_id):
     if current_user.role != 'admin':
         flash("Доступ заборонено!", "danger")
         return redirect(url_for('web.drivers_page'))
-
     driver = DriverRepository.get_by_id(driver_id)
     if request.method == 'POST':
         DriverRepository.update(
@@ -349,7 +256,6 @@ def edit_driver(driver_id):
         )
         flash("Водія оновлено", "success")
         return redirect(url_for('web.drivers_page'))
-
     return render_template('edit_driver.html', driver=driver)
 
 
@@ -359,11 +265,9 @@ def delete_vehicle(vehicle_id):
     if current_user.role != 'admin':
         flash("Доступ заборонено!", "danger")
         return redirect(url_for('web.vehicles_page'))
-
     MaintenanceRepository.delete_by_vehicle(vehicle_id)
     ExpenseRepository.delete_by_vehicle(vehicle_id)
     VehicleRepository.delete(vehicle_id)
-
     flash("Автомобіль видалено", "success")
     return redirect(url_for('web.vehicles_page'))
 
@@ -374,26 +278,21 @@ def delete_driver(driver_id):
     if current_user.role != 'admin':
         flash("Доступ заборонено!", "danger")
         return redirect(url_for('web.drivers_page'))
-
     TripRepository.delete_by_driver(driver_id)
     DriverRepository.delete(driver_id)
-
     flash("Водія та всі його поїздки видалено", "success")
     return redirect(url_for('web.drivers_page'))
 
 
-# Редагування поїздки
 @web_bp.route('/trips/edit/<int:trip_id>', methods=['GET', 'POST'])
 @login_required
 def edit_trip(trip_id):
     if current_user.role != 'admin':
         flash("Доступ заборонено!", "danger")
         return redirect(url_for('web.trips_page'))
-
     trip = TripRepository.get_by_id(trip_id)
     drivers = DriverRepository().get_all()
     vehicles = VehicleRepository().get_all()
-
     if request.method == 'POST':
         TripRepository.update(
             trip_id,
@@ -406,18 +305,15 @@ def edit_trip(trip_id):
         )
         flash("Поїздку оновлено", "success")
         return redirect(url_for('web.trips_page'))
-
     return render_template('edit_trip.html', trip=trip, drivers=drivers, vehicles=vehicles)
 
 
-# Видалення поїздки
 @web_bp.route('/trips/delete/<int:trip_id>', methods=['POST', 'GET'])
 @login_required
 def delete_trip(trip_id):
     if current_user.role != 'admin':
         flash("Доступ заборонено!", "danger")
         return redirect(url_for('web.trips_page'))
-
     TripRepository.delete(trip_id)
     flash("Поїздку видалено", "success")
     return redirect(url_for('web.trips_page'))

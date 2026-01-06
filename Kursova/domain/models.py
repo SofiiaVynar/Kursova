@@ -27,7 +27,6 @@ class Driver(db.Model):
     medical_check_date = db.Column(db.Date, nullable=False)
 
 
-# domain/models.py
 class Trip(db.Model):
     __tablename__ = 'trips'
 
@@ -39,7 +38,6 @@ class Trip(db.Model):
     distance_km = db.Column(db.Integer, nullable=False)
     fuel_cost = db.Column(db.Float, nullable=False, default=0.0)
 
-    # Встановлюємо відношення
     driver = db.relationship('Driver', backref='trips')
     vehicle = db.relationship('Vehicle', backref='trips')
 

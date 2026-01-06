@@ -1,10 +1,8 @@
 from datetime import datetime
-
 from extensions import db
-from domain.models import Vehicle, Driver, Trip, Maintenance, Expense, db
+from domain.models import Vehicle, Driver, Trip, Maintenance, Expense
 
 
-# ----------------- VEHICLE REPOSITORY -----------------
 class VehicleRepository:
     def add(self, obj):
         db.session.add(obj)
@@ -38,7 +36,6 @@ class VehicleRepository:
             db.session.commit()
 
 
-# ----------------- DRIVER REPOSITORY -----------------
 class DriverRepository:
     def add(self, obj):
         db.session.add(obj)
@@ -46,7 +43,6 @@ class DriverRepository:
 
     @staticmethod
     def get_all():
-        from domain.models import Driver
         return Driver.query.all()
 
     @staticmethod
@@ -77,8 +73,6 @@ class TripRepository:
     def add(obj):
         db.session.add(obj)
         db.session.commit()
-
-        # Додаємо витрату на пальне тільки якщо fuel_cost задано
         if obj.fuel_cost and obj.vehicle_id:
             expense = Expense(
                 vehicle_id=obj.vehicle_id,
@@ -94,10 +88,7 @@ class TripRepository:
     def get_trips_by_period(start, end):
         start_date = datetime.strptime(start, '%Y-%m-%d').date()
         end_date = datetime.strptime(end, '%Y-%m-%d').date()
-
-        return Trip.query.filter(
-            Trip.trip_date.between(start_date, end_date)
-        ).all()
+        return Trip.query.filter(Trip.trip_date.between(start_date, end_date)).all()
 
     @staticmethod
     def get_all():
@@ -123,8 +114,6 @@ class TripRepository:
             trip.route = route
             trip.distance_km = distance_km
             trip.fuel_cost = fuel_cost
-
-            # Оновлюємо відповідну витрату на пальне
             expense = Expense.query.filter_by(
                 vehicle_id=vehicle_id,
                 expense_type="Пальне",
@@ -140,7 +129,6 @@ class TripRepository:
                     expense_date=trip_date
                 )
                 db.session.add(expense)
-
             db.session.commit()
         return trip
 
@@ -148,7 +136,6 @@ class TripRepository:
     def delete(trip_id):
         trip = Trip.query.get(trip_id)
         if trip:
-            # Видаляємо пов'язану витрату на пальне
             expense = Expense.query.filter_by(
                 vehicle_id=trip.vehicle_id,
                 expense_type="Пальне",
@@ -189,10 +176,8 @@ class MaintenanceRepository:
             completed=False,
             cost=float(data.get('cost') or 0)
         )
-
         self.db.session.add(maintenance)
         self.db.session.commit()
-
         if maintenance.cost > 0:
             expense = Expense(
                 vehicle_id=maintenance.vehicle_id,
@@ -202,7 +187,6 @@ class MaintenanceRepository:
             )
             self.db.session.add(expense)
             self.db.session.commit()
-
         return maintenance
 
     @staticmethod
@@ -214,19 +198,15 @@ class MaintenanceRepository:
         maintenance = Maintenance.query.get(maintenance_id)
         if not maintenance:
             return None
-
         maintenance.vehicle_id = vehicle_id
         maintenance.planned_date = planned_date
         maintenance.maintenance_type = maintenance_type
         maintenance.cost = cost
-
-        # 🔄 оновлюємо витрату
         expense = Expense.query.filter_by(
             vehicle_id=vehicle_id,
             expense_type=f"ТО: {maintenance_type}",
             expense_date=planned_date
         ).first()
-
         if expense:
             expense.amount = cost
         else:
@@ -237,7 +217,6 @@ class MaintenanceRepository:
                 expense_date=planned_date
             )
             db.session.add(expense)
-
         db.session.commit()
         return maintenance
 
@@ -250,7 +229,6 @@ class MaintenanceRepository:
 
 
 class ExpenseRepository:
-
     def add(self, vehicle_id, expense_type, amount, expense_date):
         expense = Expense(
             vehicle_id=vehicle_id,
@@ -258,7 +236,7 @@ class ExpenseRepository:
             amount=amount,
             expense_date=expense_date
         )
-        db.session.add(expense),
+        db.session.add(expense)
         db.session.commit()
         return expense
 

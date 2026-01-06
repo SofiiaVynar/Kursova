@@ -18,7 +18,6 @@ def create_app():
     db.init_app(app)
     migrate.init_app(app, db)
 
-    # Flask-Login
     login_manager.init_app(app)
 
     @login_manager.user_loader
@@ -32,7 +31,7 @@ def create_app():
     app.register_blueprint(expense_bp, url_prefix='/api/expenses')
     app.register_blueprint(report_bp, url_prefix='/api/reports')
 
-    # Реєстрація веб-Blueprint
+
     app.register_blueprint(web_bp)
     app.register_blueprint(auth_bp)
 

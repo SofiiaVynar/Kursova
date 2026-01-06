@@ -2,7 +2,6 @@
 
 {% block content %}
 
-<!-- Flash-повідомлення -->
 <div class="container mt-3">
   {% if current_user.is_authenticated %}
     {% with messages = get_flashed_messages(with_categories=true) %}

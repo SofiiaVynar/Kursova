@@ -26,8 +26,6 @@ expense_bp = Blueprint('expenses', __name__)
 report_bp = Blueprint('reports', __name__)
 
 
-# -------- VEHICLES --------
-
 @vehicle_bp.route('/', methods=['POST'])
 def create_vehicle():
     vehicle = service.add_vehicle(request.json)
@@ -37,13 +35,8 @@ def create_vehicle():
 @vehicle_bp.route('/', methods=['GET'])
 def get_vehicles():
     vehicles = VehicleRepository().get_all()
-    return jsonify([
-        {'id': v.id, 'brand': v.brand}
-        for v in vehicles
-    ])
+    return jsonify([{'id': v.id, 'brand': v.brand} for v in vehicles])
 
-
-# -------- DRIVERS --------
 
 @driver_bp.route('/', methods=['POST'])
 def create_driver():
@@ -51,15 +44,11 @@ def create_driver():
     return jsonify({'id': driver.id}), 201
 
 
-# -------- TRIPS --------
-
 @trip_bp.route('/', methods=['POST'])
 def create_trip():
     trip = service.add_trip(request.json)
     return jsonify({'id': trip.id}), 201
 
-
-# -------- MAINTENANCE --------
 
 @maintenance_bp.route('/', methods=['POST'])
 def create_maintenance():
@@ -67,25 +56,18 @@ def create_maintenance():
     return jsonify({'id': maintenance.id}), 201
 
 
-# -------- EXPENSES --------
-
 @expense_bp.route('/', methods=['POST'])
 def create_expense():
     data = request.json
-
     expense = ExpenseFactory.create(
         vehicle_id=data['vehicle_id'],
         expense_type=data['expense_type'],
         amount=data['amount'],
         expense_date=data['expense_date']
     )
-
     ExpenseRepository().add(expense)
-
     return jsonify({'id': expense.id}), 201
 
-
-# -------- REPORTS --------
 
 @report_bp.route('/load', methods=['GET'])
 def load_report():
@@ -105,11 +87,7 @@ def costs_report():
 def period_report():
     start = request.args.get('start')
     end = request.args.get('end')
-
     trips = TripRepository().get_by_period(start, end)
     expenses = ExpenseRepository().get_by_period(start, end)
-
     report = PeriodAnalyticsReport().generate(trips, expenses)
     return jsonify(report)
-
-

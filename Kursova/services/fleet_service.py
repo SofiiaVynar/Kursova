@@ -44,7 +44,7 @@ class FleetService:
 
     def add_trip(self, data):
         distance = int(data['distance_km'])
-        fuel_amount = float(data['fuel_cost'])  # беремо лише введене
+        fuel_amount = float(data['fuel_cost'])
 
         trip = Trip(
             vehicle_id=int(data['vehicle_id']),
