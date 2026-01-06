@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Автопарк</h1>
+
+{% if current_user.is_authenticated and current_user.role == 'admin' %}
+<form method="POST" action="/vehicles">
+    <h3>Додати автомобіль</h3>
+
+    <label>Марка:</label>
+    <select name="brand" required>
+        <option value="" disabled selected>Оберіть марку</option>
+        <option value="Audi">Audi</option>
+        <option value="BMW">BMW</option>
+        <option value="Mercedes-Benz">Mercedes-Benz</option>
+        <option value="Volkswagen">Volkswagen</option>
+        <option value="Toyota">Toyota</option>
+        <option value="Honda">Honda</option>
+        <option value="Nissan">Nissan</option>
+        <option value="Hyundai">Hyundai</option>
+        <option value="Kia">Kia</option>
+        <option value="Ford">Ford</option>
+        <option value="Chevrolet">Chevrolet</option>
+        <option value="Opel">Opel</option>
+        <option value="Renault">Renault</option>
+        <option value="Peugeot">Peugeot</option>
+        <option value="Skoda">Skoda</option>
+        <option value="Mazda">Mazda</option>
+        <option value="Subaru">Subaru</option>
+        <option value="Volvo">Volvo</option>
+        <option value="Tesla">Tesla</option>
+    </select>
+
+    <label>Рік випуску:</label>
+    <input type="number" name="year" placeholder="Рік випуску" required>
+
+    <label>VIN:</label>
+    <input type="text" name="vin" placeholder="VIN" required>
+
+    <label>Технічний стан:</label>
+    <select name="technical_status" required>
+        <option value="" disabled selected>Оберіть технічний стан</option>
+        <option value="Справний">Справний</option>
+        <option value="Потребує ТО">Потребує ТО</option>
+        <option value="На ремонті">На ремонті</option>
+        <option value="Несправний">Несправний</option>
+        <option value="Виведений з експлуатації">Виведений з експлуатації</option>
+    </select>
+
+    <label>Пробіг:</label>
+    <input type="number" name="mileage" placeholder="Пробіг">
+
+    <label>Страховка (дата закінчення):</label>
+    <input type="date" name="insurance_expiry">
+
+    <button type="submit">Додати автомобіль</button>
+</form>
+{% endif %}
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Марка</th>
+        <th>Рік</th>
+        <th>VIN</th>
+        <th>Технічний стан</th>
+        <th>Пробіг</th>
+        <th>Страховка</th>
+        <th>Статус</th>
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <th>Дії</th>
+        {% endif %}
+    </tr>
+    {% for v in vehicles %}
+    <tr>
+        <td>{{ v.id }}</td>
+        <td>{{ v.brand }}</td>
+        <td>{{ v.year }}</td>
+        <td>{{ v.vin }}</td>
+        <td>{{ v.technical_status }}</td>
+        <td>{{ v.mileage }}</td>
+        <td>{{ v.insurance_expiry }}</td>
+        <td>
+    {% if v.trips|length == 0 and v.technical_status == "Справний" %}
+        ✅
+    {% else %}
+        ❌
+    {% endif %}
+</td>
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <td>
+            <a href="/vehicles/edit/{{ v.id }}">✏️Редагувати✏️</a>
+            <a href="/vehicles/delete/{{ v.id }}" onclick="return confirm('Видалити цей автомобіль?')">🗑️Видалити🗑️</a>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

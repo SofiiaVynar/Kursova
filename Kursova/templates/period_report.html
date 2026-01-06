@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Звіт за період</h1>
+
+<p>
+    Період:
+    <strong>{{ request.args.get('start') }}</strong>
+    —
+    <strong>{{ request.args.get('end') }}</strong>
+</p>
+
+<hr>
+
+<h2>Аналітика</h2>
+
+<ul>
+    <li><strong>Кількість поїздок:</strong> {{ report.trips }}</li>
+    <li><strong>Кількість витрат:</strong> {{ total_expenses_count }}</li>
+    <li><strong>Загальна сума витрат:</strong> {{ total_expenses_amount }} грн</li>
+</ul>
+
+<h3>Детальні витрати</h3>
+<ul>
+{% for expense in expenses %}
+    <li>{{ expense.expense_type }}: {{ expense.amount }} грн</li>
+{% endfor %}
+</ul>
+
+<a href="/reports">⬅ Повернутися до звітів</a>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="main-center">
+    <div class="form-container">
+        <h2>Реєстрація</h2>
+
+        <form method="POST">
+            <label for="gmail">Gmail:</label>
+            <input type="email" name="gmail" required>
+
+            <label for="password">Пароль:</label>
+            <input type="password" name="password" required>
+
+            <button type="submit">Зареєструватися</button>
+        </form>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <ul class="alert">
+              {% for category, message in messages %}
+                <li class="{{ category }}">{{ message }}</li>
+              {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+
+        <p class="register-link">Вже є акаунт? <a href="{{ url_for('auth.login') }}">Увійти</a></p>
+    </div>
+</main>
+{% endblock %}

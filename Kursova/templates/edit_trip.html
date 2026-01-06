@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Редагувати поїздку</h1>
+
+<form method="POST" action="{{ url_for('web.edit_trip', trip_id=trip.id) }}">
+    <label>Дата виїзду:</label>
+    <input type="date" name="trip_date" value="{{ trip.trip_date }}" required>
+
+    <label>Водій:</label>
+    <select name="driver_id" required>
+        {% for driver in drivers %}
+            <option value="{{ driver.id }}" {% if driver.id == trip.driver_id %}selected{% endif %}>
+                {{ driver.full_name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Автомобіль:</label>
+    <select name="vehicle_id" required>
+        {% for vehicle in vehicles %}
+            <option value="{{ vehicle.id }}" {% if vehicle.id == trip.vehicle_id %}selected{% endif %}>
+                {{ vehicle.brand }} ({{ vehicle.vin }})
+            </option>
+        {% endfor %}
+    </select>
+
+    <label>Маршрут:</label>
+    <input type="text" name="route" value="{{ trip.route }}" required>
+
+    <label>Відстань (км):</label>
+    <input type="number" name="distance_km" value="{{ trip.distance_km }}" required>
+
+    <label>Ціна пального:</label>
+    <input type="number" name="fuel_cost" value="{{ trip.fuel_cost }}" step="0.01" required>
+
+    <button type="submit">Зберегти</button>
+</form>
+{% endblock %}

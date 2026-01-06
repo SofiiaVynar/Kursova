@@ -1,0 +1,381 @@
+@font-face {
+    font-family: 'Neue Machina';
+    src: url('../fonts/NeueMachina-Medium.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* Робимо body flex-контейнером */
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* повна висота вікна */
+    margin: 0;
+    font-family: 'Neue Machina', sans-serif;
+}
+
+/* Центрування форми по вертикалі і горизонталі */
+.main-center {
+    display: flex;
+    justify-content: center;  /* горизонтальне центровання */
+    align-items: center;      /* вертикальне центровання */
+    min-height: 80vh;
+    background-color:#ced9e4/* висота блоку для центрування */
+}
+
+/* Зовнішній контейнер форми */
+.form-container {
+    width: 400px;
+    padding: 30px;
+    border: 2px solid #2c3e50;
+    border-radius: 10px;
+    background-color: #1f3d5c;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-container input,
+.form-container button {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 16px;
+    border-radius: 55px;
+    border: 1px solid #2c3e50;
+}
+
+.form-container button {
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+
+.alert {
+    color: #c0392b;           /* червоний текст */
+    background-color: #fceae9; /* дуже світлий червоний фон для контрасту */
+    border: 1px solid #c0392b; /* рамка червоного кольору */
+    padding: 10px 15px;
+    border-radius: 5px;
+    margin: 10px 0;
+    list-style: none;         /* прибирає точки у списку */
+    font-size: 16px;
+}
+
+.form-container button:hover {
+    background-color: #517394;
+}
+
+.form-container .register-link {
+    text-align: center;
+    margin-top: 15px;
+    display: block;
+}
+
+/* Контент займає доступний простір */
+main {
+    flex: 1;
+}
+
+/* Хедер */
+header {
+    background: #2c3e50;
+    color: white;
+    padding: 15px;
+}
+
+/* Футер */
+footer {
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    font-size: 16px;
+}
+
+
+nav {
+    display: flex;
+    justify-content: space-around; /* Рівномірно розподіляє посилання по ширині */
+    align-items: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    font-size: 20px; /* Збільшено розмір шрифту */
+    font-weight: bold; /* Жирніші букви для кращої видимості */
+    padding: 10px 15px; /* Простір навколо тексту */
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+nav .dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+nav .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    min-width: 180px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+nav .dropdown-content a {
+    color: #2c3e50;
+    padding: 10px 15px;
+    text-decoration: none;
+    display: block;
+}
+
+nav .dropdown:hover .dropdown-content {
+    display: block;
+}
+
+
+/* Контейнер основного контенту */
+.container {
+    padding: 20px;
+}
+
+/* Таблиці */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    margin-bottom: 20px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background: #ecf0f1;
+}
+
+/* Форми */
+form input,
+form select {
+    padding: 6px;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 8px 15px;
+    background: #3498db;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #2980b9;
+}
+
+/* Навігація */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #1f2933;
+    padding: 12px 30px;
+}
+
+.navbar .logo {
+    color: white;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    margin-left: 15px;
+}
+
+.navbar a:hover {
+    text-decoration: underline;
+}
+
+.hero {
+    height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero-text {
+    color: #253d56;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.hero-text h1 {
+    font-size: 36px;
+}
+
+.hero-image {
+    border: 4px solid #1c3d5f;   /* рамка */
+    border-radius: 15px;          /* заокруглені кути */
+    display: block;
+    margin: 0 auto;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* базова тінь */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* анімація */
+}
+
+.hero-image:hover {
+    transform: translateY(-10px); /* "вилазить" наперед */
+    box-shadow: 0 12px 20px rgba(0, 0, 0, 0.5); /* сильніша тінь */
+}
+
+/* --- Заголовки по центру --- */
+h1, h2, h3, h4, h5, h6 {
+    text-align: center;
+    color: #333; /* можна змінити колір заголовку */
+}
+
+.center-italic {
+    font-style: bold, italic;       /* курсив */
+    text-align: center;       /* по центру */
+    margin: 5px 0;            /* відстань між рядками */
+    list-style-type: none;    /* прибирає точки списку */
+    font-size: 18px;          /* збільшує шрифт */
+}
+
+.form-container {
+    width: 400px;             /* ширина форми */
+    margin: 50px auto;        /* центр по горизонталі і трохи знизу */
+    padding: 30px;            /* внутрішні відступи */
+    border: 2px solid #2c3e50; /* рамка */
+    border-radius: 10px;      /* заокруглені краї */
+    background-color: #f8f9fa; /* світлий фон */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-container input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    font-size: 16px;
+    border: 1px solid #2c3e50;
+    border-radius: 5px;
+}
+
+.form-container button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.form-container button:hover {
+    background-color: #517394;
+}
+
+.form-container .register-link {
+    text-align: center;
+    margin-top: 15px;
+    display: block;
+}
+
+
+/* --- Таблиці --- */
+table {
+    width: 100%; /* або конкретна ширина */
+    border-collapse: collapse; /* з’єднання кордонів */
+    border: 2px solid #517394; /* рамка таблиці */
+    border-radius: 8px; /* заокруглені краї */
+    overflow: hidden; /* обрізає кути при border-radius */
+    margin: 20px auto; /* центрування таблиці по горизонталі */
+}
+
+/* --- Заголовки стовпців таблиці --- */
+th {
+    background-color: #517394;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+/* --- Комірки таблиці --- */
+td {
+    border: 1px solid #517394;
+    padding: 8px;
+    text-align: center;
+}
+
+/* --- Додаткове: рядки таблиці при наведенні --- */
+tr:hover {
+    background-color: #e0e7f0;
+}
+
+/* --- Загальний контейнер форми --- */
+form {
+    width: 80%;
+    max-width: 600px;
+    margin: 20px auto;
+    border: 2px solid #2c3e50; /* рамка форми */
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #dee6ed;
+    display: grid;
+    gap: 15px; /* відстань між полями */
+}
+
+/* --- Лейбли і поля вводу --- */
+form label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+form input, form select, form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #2c3e50; /* рамка полів */
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+
+form button {
+    background-color: #517394;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+form button:hover {
+    background-color: #2c3e50;
+}
+
+
+

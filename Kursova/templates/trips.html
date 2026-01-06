@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Поїздки</h1>
+
+{% if current_user.is_authenticated and current_user.role == 'admin' %}
+
+<form method="POST" action="/trips">
+    <label>Дата виїзду:</label>
+    <input type="date" name="trip_date" required>
+
+    <label>Водій:</label>
+    <select name="driver_id" required>
+        {% for driver in drivers %}
+            <option value="{{ driver.id }}">{{ driver.full_name }}</option>
+        {% endfor %}
+    </select>
+
+    <label>Автомобіль:</label>
+    <select name="vehicle_id" required>
+        {% for vehicle in vehicles %}
+            {% if vehicle.trips|length == 0 and vehicle.technical_status == "Справний" %}
+                <option value="{{ vehicle.id }}">{{ vehicle.brand }} ({{ vehicle.vin }})</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+
+    <label>Маршрут:</label>
+    <input type="text" name="route" placeholder="Маршрут" required>
+
+    <label>Відстань (км):</label>
+    <input type="number" name="distance_km" placeholder="Кілометри" required>
+
+    <label>Ціна пального:</label>
+    <input type="number" name="fuel_cost" placeholder="грн" step="0.01" value="{{ 0 }}" required>
+
+    <button type="submit">Додати поїздку</button>
+</form>
+{% endif %}
+
+<table>
+    <tr>
+        <th>ID</th>
+        <th>Дата виїзду</th>
+        <th>Водій</th>
+        <th>Автомобіль</th>
+        <th>Маршрут</th>
+        <th>Ціна пального/км</th>
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <th>Дії</th>
+        {% endif %}
+    </tr>
+    {% for t in trips %}
+    <tr>
+        <td>{{ t.id }}</td>
+        <td>{{ t.trip_date }}</td>
+        <td>{{ t.driver.full_name }}</td>
+        <td>{{ t.vehicle.brand }} ({{ t.vehicle.vin }})</td>
+        <td>{{ t.route }}</td>
+        <td>{{ t.fuel_cost }}</td>
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <td>
+            <a href="/trips/edit/{{ t.id }}">✏️Редагувати✏️</a>
+            <a href="/trips/delete/{{ t.id }}" onclick="return confirm('Видалити цю поїздку?')">🗑️Видалити🗑️</a>
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

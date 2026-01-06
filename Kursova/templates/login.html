@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<main class="main-center">
+    <div class="form-container">
+        <h2>Вхід</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="alert">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        <form method="POST">
+            <input type="text" name="gmail" placeholder="Gmail" required>
+            <input type="password" name="password" placeholder="Пароль" required>
+            <button type="submit">Увійти</button>
+        </form>
+
+        <a class="register-link" href="{{ url_for('auth.register') }}">Зареєструватися</a>
+    </div>
+</main>
+{% endblock %}
