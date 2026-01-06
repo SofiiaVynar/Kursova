@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Редагування водія</h1>
+
+<form method="POST">
+    <label>Повне ім'я:</label>
+    <input type="text" name="full_name" value="{{ driver.full_name }}" required>
+
+    <label>Номер водійських прав:</label>
+    <input type="text" name="license_number" value="{{ driver.license_number }}">
+
+    <label>Стаж (роки):</label>
+    <input type="number" name="experience_years" value="{{ driver.experience_years }}">
+
+    <label>Дата медичної перевірки:</label>
+    <input type="date" name="medical_check_date" value="{{ driver.medical_check_date }}">
+
+    <button type="submit">Зберегти</button>
+</form>
+{% endblock %}

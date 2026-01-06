@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Водії</h1>
+
+{% if current_user.is_authenticated and current_user.role == 'admin' %}
+<form method="POST" action="/drivers">
+    <h3>Додати водія</h3>
+    <input type="text" name="full_name" placeholder="ПІБ" required>
+    <input type="text" name="license_number" placeholder="Номер ліцензії" required>
+    <input type="number" name="experience_years" placeholder="Стаж (років)" required>
+    <input type="date" name="medical_check_date" placeholder="Дата медогляду" required>
+    <button type="submit">Додати</button>
+</form>
+{% endif %}
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ПІБ</th>
+            <th>Ліцензія</th>
+            <th>Стаж</th>
+            <th>Медогляд</th>
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <th>Дії</th>
+            {% endif %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for d in drivers %}
+        <tr>
+            <td>{{ d.id }}</td>
+            <td>{{ d.full_name }}</td>
+            <td>{{ d.license_number }}</td>
+            <td>{{ d.experience_years }}</td>
+            <td>{{ d.medical_check_date }}</td>
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <td>
+                <a href="/drivers/edit/{{ d.id }}">✏️Редагувати✏️</a>
+                <a href="/drivers/delete/{{ d.id }}" onclick="return confirm('Видалити цього водія?')">🗑️Видалити🗑️</a>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

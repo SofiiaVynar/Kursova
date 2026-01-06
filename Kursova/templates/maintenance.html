@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Технічне обслуговування</h1>
+
+    {% if admin %}
+    <form method="POST" action="/maintenance">
+        <label>Автомобіль:</label>
+        <select name="vehicle_id" required>
+            {% for v in vehicles %}
+            <option value="{{ v.id }}">{{ v.brand }} ({{ v.vin }})</option>
+            {% endfor %}
+        </select>
+
+        <label>Дата ТО:</label>
+        <input type="date" name="planned_date" required>
+
+        <label>Тип ТО:</label>
+        <select name="maintenance_type" required>
+            <option value="Планове">Планове</option>
+            <option value="Аварійне">Аварійне</option>
+            <option value="Сезонне">Сезонне</option>
+            <option value="Додаткове">Додаткове</option>
+        </select>
+
+        <label>Ціна ТО (грн):</label>
+        <input type="number" name="cost" step="0.01" min="0" required>
+
+        <button type="submit">Додати ТО</button>
+    </form>
+    {% endif %}
+
+    <h2>Заплановане ТО</h2>
+    <table>
+        <tr>
+            <th>Автомобіль</th>
+            <th>Дата</th>
+            <th>Тип ТО</th>
+            <th>Ціна</th>
+            {% if admin %}
+            <th>Дії</th>
+            {% endif %}
+        </tr>
+
+        {% for m in maintenances %}
+        <tr>
+            <td>{{ m.vehicle.brand }} ({{ m.vehicle.vin }})</td>
+            <td>{{ m.planned_date }}</td>
+            <td>{{ m.maintenance_type }}</td>
+            <td>{{ m.cost }} грн</td>
+
+            {% if admin %}
+            <td>
+                <a href="{{ url_for('maintenance.edit', maintenance_id=m.id) }}">✏️</a>
+
+                <form method="POST"
+                      action="{{ url_for('maintenance.delete', maintenance_id=m.id) }}"
+                      style="display:inline;"
+                      onsubmit="return confirm('Видалити ТО?');">
+                    <button type="submit">🗑️</button>
+                </form>
+            </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

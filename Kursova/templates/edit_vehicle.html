@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Редагування автомобіля</h1>
+
+<form method="POST">
+    <label for="brand">Марка:</label>
+    <input type="text" id="brand" name="brand" value="{{ vehicle.brand }}" required>
+
+    <label for="year">Рік випуску:</label>
+    <input type="number" id="year" name="year" value="{{ vehicle.year }}" required>
+
+    <label for="vin">VIN:</label>
+    <input type="text" id="vin" name="vin" value="{{ vehicle.vin }}" required>
+
+<label for="technical_status">Технічний стан:</label>
+<select id="technical_status" name="technical_status" required>
+    <option value="Справний" {% if vehicle.technical_status == 'Справний' %}selected{% endif %}>Справний</option>
+    <option value="Потребує ТО" {% if vehicle.technical_status == 'Потребує ТО' %}selected{% endif %}>Потребує ТО</option>
+    <option value="На ремонті" {% if vehicle.technical_status == 'На ремонті' %}selected{% endif %}>На ремонті</option>
+    <option value="Несправний" {% if vehicle.technical_status == 'Несправний' %}selected{% endif %}>Несправний</option>
+    <option value="Виведений з експлуатації" {% if vehicle.technical_status == 'Виведений з експлуатації' %}selected{% endif %}>Виведений з експлуатації</option>
+</select>
+
+
+
+
+    <label for="mileage">Пробіг:</label>
+    <input type="number" id="mileage" name="mileage" value="{{ vehicle.mileage }}">
+
+    <label for="insurance_expiry">Страховка (дата закінчення):</label>
+    <input type="date" id="insurance_expiry" name="insurance_expiry" value="{{ vehicle.insurance_expiry }}">
+
+    <button type="submit">Зберегти зміни</button>
+</form>
+
+<a href="{{ url_for('web.vehicles_page') }}">⬅️ Назад до списку автомобілів</a>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Звіти</h1>
+
+<h2>Аналітика автопарку</h2>
+
+<form method="GET" action="/reports/period">
+    <label>Період з:</label>
+    <input type="date" name="start" required>
+    <label>По:</label>
+    <input type="date" name="end" required>
+    <button type="submit">Згенерувати</button>
+</form>
+
+<!-- Витрати на утримання автопарку завжди -->
+<h3>Витрати на утримання автопарку</h3>
+<ul>
+{% for expense_type, amount in cost_report.items() %}
+    <li class="center-italic {% if expense_type == 'Загалом' %}total{% endif %}">
+        {{ expense_type }}: {{ amount }}
+    </li>
+{% endfor %}
+</ul>
+
+<!-- Загальна аналітика завжди -->
+<h3>Загальна аналітика</h3>
+<ul>
+    <li class="center-italic">
+        Загальна кількість поїздок: {{ total_trips }}
+    </li>
+</ul>
+
+<!-- Аналітика за період тільки якщо період заданий -->
+{% if period_report %}
+<h3>Аналітика за період</h3>
+<ul>
+    <li class="center-italic">Витрати: {{ period_report.costs }}</li>
+    <li class="center-italic">Кількість поїздок: {{ period_report.trips }}</li>
+</ul>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>Редагування ТО</h1>
+
+    <form method="POST">
+        <label>Автомобіль:</label>
+        <select name="vehicle_id" required>
+            {% for v in vehicles %}
+            <option value="{{ v.id }}"
+                {% if v.id == maintenance.vehicle_id %}selected{% endif %}>
+                {{ v.brand }} ({{ v.vin }})
+            </option>
+            {% endfor %}
+        </select>
+
+        <label>Дата ТО:</label>
+        <input type="date" name="planned_date"
+               value="{{ maintenance.planned_date }}" required>
+
+        <label>Тип ТО:</label>
+        <select name="maintenance_type" required>
+            {% for t in ["Планове", "Аварійне", "Сезонне", "Додаткове"] %}
+            <option value="{{ t }}"
+                {% if maintenance.maintenance_type == t %}selected{% endif %}>
+                {{ t }}
+            </option>
+            {% endfor %}
+        </select>
+
+        <label>Ціна ТО (грн):</label>
+        <input type="number" name="cost" step="0.01"
+               value="{{ maintenance.cost }}" required>
+
+        <button type="submit">Зберегти</button>
+        <a href="{{ url_for('web.maintenance_page') }}">Скасувати</a>
+    </form>
+</div>
+{% endblock %}
